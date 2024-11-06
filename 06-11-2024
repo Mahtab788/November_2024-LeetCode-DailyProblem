@@ -1,0 +1,53 @@
+// #3011.Find if array can be sorted 
+
+import java.util.*;
+
+class Solution {
+    
+    // Helper function to count set bits in a number
+    private int countSetBits(int num) {
+        int count = 0;
+        while (num > 0) {
+            count += (num & 1);  // Add the last bit
+            num >>= 1;  // Right shift to check the next bit
+        }
+        return count;
+    }
+    
+    public boolean canSortArray(int[] nums) {
+        int n = nums.length;
+        
+        // Create an array of pairs (setBitsCount, number) to keep track of the original array order
+        int[] setBitsCount = new int[n];
+        for (int i = 0; i < n; i++) {
+            setBitsCount[i] = countSetBits(nums[i]);
+        }
+
+        // Simulate a sorting process with adjacent valid swaps.
+        // We will use a modified bubble sort approach.
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - 1 - i; j++) {
+                // Check if the current element and the next element can be swapped (same set bits count)
+                if (setBitsCount[j] == setBitsCount[j + 1] && nums[j] > nums[j + 1]) {
+                    // Swap in nums array and setBitsCount array to maintain the same relative information
+                    int temp = nums[j];
+                    nums[j] = nums[j + 1];
+                    nums[j + 1] = temp;
+                    
+                    temp = setBitsCount[j];
+                    setBitsCount[j] = setBitsCount[j + 1];
+                    setBitsCount[j + 1] = temp;
+                }
+            }
+        }
+        
+        // Finally, check if the array is sorted
+        for (int i = 1; i < n; i++) {
+            if (nums[i] < nums[i - 1]) {
+                return false; // If it's not sorted, return false
+            }
+        }
+        
+        return true;
+    }
+}
