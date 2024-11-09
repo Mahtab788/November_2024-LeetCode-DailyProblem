@@ -1,0 +1,20 @@
+#3133." Mim=nimum Array End"
+
+class Solution {
+    public long minEnd(int n, int x) {
+        long result = x;  // Initialize result with x
+        long remaining = n - 1;  // Remaining elements to process
+        long position = 1;  // Start with the lowest bit
+
+        // Process each bit
+        while (remaining != 0) {
+            if ((x & position) == 0) {  // If the bit in x is 0
+                result |= (remaining & 1) * position;  // Update result at current bit
+                remaining >>= 1;  // Shift remaining right to process next number
+            }
+            position <<= 1;  // Move to the next higher bit
+        }
+
+        return result;  // Return the last element in the sequence
+    }
+}
