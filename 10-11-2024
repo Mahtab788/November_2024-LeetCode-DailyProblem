@@ -1,0 +1,40 @@
+#3097." Shortest Subarray with OR at Least K II"
+
+class Solution {
+    public int minimumSubarrayLength(int[] nums, int k) {
+        int n = nums.length;
+        int[] bitCount = new int[32]; // Track presence of each bit within the window
+        int currentOR = 0; // OR value for the current window
+        int left = 0;
+        int minLength = Integer.MAX_VALUE;
+
+        for (int right = 0; right < n; right++) {
+            currentOR |= nums[right]; // Include nums[right] in currentOR
+            
+            // Update bit counts for each bit position
+            for (int bit = 0; bit < 32; bit++) {
+                if ((nums[right] & (1 << bit)) != 0) {
+                    bitCount[bit]++;
+                }
+            }
+            
+            // Shrink the window while currentOR meets the target condition
+            while (left <= right && currentOR >= k) {
+                minLength = Math.min(minLength, right - left + 1); // Update min length
+                
+                // Adjust bit count and remove bits from OR if their count goes to 0
+                for (int bit = 0; bit < 32; bit++) {
+                    if ((nums[left] & (1 << bit)) != 0) {
+                        bitCount[bit]--;
+                        if (bitCount[bit] == 0) {
+                            currentOR &= ~(1 << bit); // Remove bit from currentOR
+                        }
+                    }
+                }
+                left++; // Move left pointer to shrink window
+            }
+        }
+        
+        return minLength == Integer.MAX_VALUE ? -1 : minLength;
+    }
+}
