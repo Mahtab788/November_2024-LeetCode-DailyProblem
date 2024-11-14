@@ -1,0 +1,41 @@
+#2064."Minimized maximum of products distributed to any store"
+
+import java.util.Arrays;
+class Solution {
+    public int minimizedMaximum(int n, int[] quantities) {
+        // Set the initial search bounds: minimum possible `x` is 1, 
+        // maximum possible `x` is the highest quantity in `quantities`.
+        int left = 1;
+        int right = Arrays.stream(quantities).max().getAsInt();
+        
+        // Binary search to find the minimum possible `x` that can distribute items fairly
+        while (left < right) {
+            int mid = left + (right - left) / 2;  // Midpoint as the current candidate for `x`
+            // Check if we can distribute products such that no store gets more than `mid`
+            if (canDistribute(quantities, n, mid)) {
+                right = mid;  // If possible, try a smaller `x`
+            } else {
+                left = mid + 1;  // If not possible, increase `x`
+            }
+        }
+        
+        return left;  // `left` will be the minimized maximum value of `x`
+    }
+
+    private boolean canDistribute(int[] quantities, int n, int maxPerStore) {
+        int requiredStores = 0;
+        
+        // Calculate the minimum stores needed to distribute each product type within `maxPerStore`
+        for (int quantity : quantities) {
+            // Divide each quantity by `maxPerStore` (rounding up) to determine store needs
+            requiredStores += (quantity + maxPerStore - 1) / maxPerStore;
+            // If required stores exceed available stores, distribution isn't feasible
+            if (requiredStores > n) {
+                return false;
+            }
+        }
+        
+        // If required stores fit within the available `n`, distribution is possible
+        return true;
+    }
+}
