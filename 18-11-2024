@@ -1,0 +1,35 @@
+#1652. "Defuse The Bomb "
+
+class Solution {
+    public int[] decrypt(int[] code, int k) {
+        int n = code.length;
+        int[] result = new int[n];
+
+        if (k == 0) {
+            // If k is 0, all elements are replaced with 0.
+            return result;
+        }
+
+        int sum = 0;
+        int start = k > 0 ? 1 : n + k; // Start index for summing, wrapping for negative k
+        int end = k > 0 ? k : n - 1;   // End index for summing, wrapping for negative k
+
+        // Calculate the initial window sum
+        for (int i = start; i <= end; i++) {
+            sum += code[i % n];
+        }
+
+        // Calculate the decrypted code
+        for (int i = 0; i < n; i++) {
+            result[i] = sum;
+
+            // Slide the window
+            sum -= code[start % n];
+            start = (start + 1) % n;
+            end = (end + 1) % n;
+            sum += code[end % n];
+        }
+
+        return result;
+    }
+}
