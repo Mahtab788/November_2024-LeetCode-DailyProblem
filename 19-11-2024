@@ -1,0 +1,31 @@
+#."Maximum Sum Of Distinct Subarray With Length K"
+
+import java.util.HashSet;
+class Solution {
+    public long maximumSubarraySum(int[] nums, int k) {
+        long maxSum = 0;
+        long currentSum = 0;
+        int left = 0;
+        HashSet<Integer> set = new HashSet<>();
+
+        for (int right = 0; right < nums.length; right++) {
+            // If we encounter a duplicate or window exceeds size k, shrink from the left
+            while (set.contains(nums[right]) || right - left + 1 > k) {
+                set.remove(nums[left]);
+                currentSum -= nums[left];
+                left++;
+            }
+
+            // Add the current element to the window
+            set.add(nums[right]);
+            currentSum += nums[right];
+
+            // Check if the current window meets the size k and update maxSum
+            if (right - left + 1 == k) {
+                maxSum = Math.max(maxSum, currentSum);
+            }
+        }
+
+        return maxSum;
+    }
+}
