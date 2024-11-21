@@ -1,0 +1,64 @@
+#.2257 "Count-unguarded-cells-in-the-grid"
+
+import java.util.HashSet;
+
+class Solution {
+    public int countUnguarded(int m, int n, int[][] guards, int[][] walls) {
+        // Track walls and guards in sets for fast lookup
+        HashSet<String> wallsSet = new HashSet<>();
+        HashSet<String> guardsSet = new HashSet<>();
+        HashSet<String> guardedSet = new HashSet<>();
+
+        // Mark guards and walls
+        for (int[] guard : guards) {
+            guardsSet.add(encode(guard[0], guard[1]));
+        }
+        for (int[] wall : walls) {
+            wallsSet.add(encode(wall[0], wall[1]));
+        }
+
+        // Directions for cardinal moves (up, down, left, right)
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+        // Simulate guard visibility
+        for (int[] guard : guards) {
+            int row = guard[0], col = guard[1];
+
+            for (int[] dir : directions) {
+                int r = row, c = col;
+
+                // Continue marking cells in the current direction
+                while (true) {
+                    r += dir[0];
+                    c += dir[1];
+
+                    // Stop if out of bounds, or encounters a wall or guard
+                    if (r < 0 || r >= m || c < 0 || c >= n || wallsSet.contains(encode(r, c)) || guardsSet.contains(encode(r, c))) {
+                        break;
+                    }
+
+                    // Mark cell as guarded
+                    guardedSet.add(encode(r, c));
+                }
+            }
+        }
+
+        // Count unoccupied, unguarded cells
+        int unguardedCount = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                String cell = encode(i, j);
+                if (!wallsSet.contains(cell) && !guardsSet.contains(cell) && !guardedSet.contains(cell)) {
+                    unguardedCount++;
+                }
+            }
+        }
+
+        return unguardedCount;
+    }
+
+    // Private helper method to encode (row, col) as a string
+    private String encode(int row, int col) {
+        return row + "," + col;
+    }
+}
