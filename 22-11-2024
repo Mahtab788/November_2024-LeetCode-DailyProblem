@@ -1,0 +1,36 @@
+#1072.Flip-columns-for-maximum-number-of-equal-rows.
+
+import java.util.HashMap;
+
+class Solution {
+    public int maxEqualRowsAfterFlips(int[][] matrix) {
+        HashMap<String, Integer> patternCount = new HashMap<>();
+        int m = matrix.length;
+        int n = matrix[0].length;
+
+        for (int[] row : matrix) {
+            StringBuilder basePattern = new StringBuilder();
+            StringBuilder flippedPattern = new StringBuilder();
+
+            for (int value : row) {
+                basePattern.append(value);
+                flippedPattern.append(1 - value); // Flip value
+            }
+
+            String baseKey = basePattern.toString();
+            String flippedKey = flippedPattern.toString();
+
+            // Count occurrences of both patterns
+            patternCount.put(baseKey, patternCount.getOrDefault(baseKey, 0) + 1);
+            patternCount.put(flippedKey, patternCount.getOrDefault(flippedKey, 0) + 1);
+        }
+
+        // Find the maximum count of any pattern
+        int maxRows = 0;
+        for (int count : patternCount.values()) {
+            maxRows = Math.max(maxRows, count);
+        }
+
+        return maxRows;
+    }
+}
