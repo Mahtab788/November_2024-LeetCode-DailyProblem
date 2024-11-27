@@ -1,0 +1,45 @@
+#3243. Shortest Distance After Road Addition Queries I.
+public class Solution {
+    private void topologicalSort(int node, List<List<Integer>> adj, boolean[] visited, List<Integer> topo) {
+        visited[node] = true;
+        for (int neighbor : adj.get(node)) {
+            if (!visited[neighbor]) topologicalSort(neighbor, adj, visited, topo);
+        }
+        topo.add(node);
+    }
+
+    public int[] shortestDistanceAfterQueries(int n, int[][] queries) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+        for (int i = 0; i < n - 1; i++) adj.get(i).add(i + 1); // Initialize default edges
+
+        int[] result = new int[queries.length];
+        for (int q = 0; q < queries.length; q++) {
+            adj.get(queries[q][0]).add(queries[q][1]); // Add new edge from the query
+
+            // Perform topological sort
+            List<Integer> topo = new ArrayList<>();
+            boolean[] visited = new boolean[n];
+            for (int i = 0; i < n; i++) {
+                if (!visited[i]) topologicalSort(i, adj, visited, topo);
+            }
+            Collections.reverse(topo); // Reverse for correct order
+
+            // Compute shortest path using the topological order
+            int[] dist = new int[n];
+            Arrays.fill(dist, Integer.MAX_VALUE);
+            dist[0] = 0;
+
+            for (int node : topo) {
+                if (dist[node] != Integer.MAX_VALUE) {
+                    for (int neighbor : adj.get(node)) {
+                        dist[neighbor] = Math.min(dist[neighbor], dist[node] + 1);
+                    }
+                }
+            }
+
+            result[q] = dist[n - 1] == Integer.MAX_VALUE ? -1 : dist[n - 1]; // Distance to city n-1
+        }
+        return result;
+    }
+}
