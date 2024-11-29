@@ -1,0 +1,38 @@
+#2577. Minimum Time to Visit a Cell In a Grid
+
+class Solution {
+    public int minimumTime(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[2] - b[2]); // Min-heap for row, col, time
+        boolean[][] visited = new boolean[m][n];
+
+        // Check if the initial moves are blocked
+        if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
+
+        int[][] moves = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+        pq.add(new int[]{0, 0, 0}); // Starting point
+
+        while (!pq.isEmpty()) {
+            int[] arr = pq.poll();
+            int row = arr[0], col = arr[1], time = arr[2];
+
+            // If destination is reached
+            if (row == m - 1 && col == n - 1) return time;
+
+            if (visited[row][col]) continue;
+            visited[row][col] = true;
+
+            // Process neighbors
+            for (int[] move : moves) {
+                int nrow = row + move[0], ncol = col + move[1];
+                if (nrow >= 0 && nrow < m && ncol >= 0 && ncol < n && !visited[nrow][ncol]) {
+                    int diff = grid[nrow][ncol] - time;
+                    int newtime = (diff <= 1) ? time + 1 : time + 1 + (diff / 2) * 2; // Adjust time for parity
+                    pq.add(new int[]{nrow, ncol, newtime});
+                }
+            }
+        }
+
+        return -1; // Destination unreachable
+    }
+}
