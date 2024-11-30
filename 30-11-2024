@@ -1,0 +1,54 @@
+#2097. Valid Arrangement of Pairs.
+
+class Solution {
+    public int[][] validArrangement(int[][] pairs) {
+        Map<Integer, Deque<Integer>> adj = new HashMap<>();
+        Map<Integer, Integer> inDegree = new HashMap<>();
+        Map<Integer, Integer> outDegree = new HashMap<>();
+
+        // Build adjacency list and degree maps
+        for (int[] pair : pairs) {
+            int start = pair[0], end = pair[1];
+            adj.computeIfAbsent(start, k -> new ArrayDeque<>()).add(end);
+            outDegree.put(start, outDegree.getOrDefault(start, 0) + 1);
+            inDegree.put(end, inDegree.getOrDefault(end, 0) + 1);
+        }
+
+        // Find starting node for Eulerian path
+        int startNode = pairs[0][0];
+        for (int node : adj.keySet()) {
+            if (outDegree.getOrDefault(node, 0) > inDegree.getOrDefault(node, 0)) {
+                startNode = node;
+                break;
+            }
+        }
+
+        // Perform Hierholzer's Algorithm to find the path
+        List<int[]> path = new ArrayList<>();
+        Deque<Integer> stack = new ArrayDeque<>();
+        stack.push(startNode);
+
+        while (!stack.isEmpty()) {
+            int curr = stack.peek();
+            if (adj.containsKey(curr) && !adj.get(curr).isEmpty()) {
+                stack.push(adj.get(curr).poll());
+            } else {
+                stack.pop();
+                if (!stack.isEmpty()) {
+                    path.add(new int[]{stack.peek(), curr});
+                }
+            }
+        }
+
+        // Reverse path to match the correct order
+        Collections.reverse(path);
+
+        // Convert path to int[][] format
+        int[][] result = new int[path.size()][2];
+        for (int i = 0; i < path.size(); i++) {
+            result[i] = path.get(i);
+        }
+
+        return result;
+    }
+}
