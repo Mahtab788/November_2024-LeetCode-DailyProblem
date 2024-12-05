@@ -1,0 +1,42 @@
+#.2337. Move Pieces to Obtain a String.
+class Solution {
+    public boolean canChange(String start, String target) {
+        int n = start.length();
+        int sIdx = 0, tIdx = 0;
+
+        while (sIdx < n || tIdx < n) {
+            // Skip blank spaces in start
+            while (sIdx < n && start.charAt(sIdx) == '_') {
+                sIdx++;
+            }
+            // Skip blank spaces in target
+            while (tIdx < n && target.charAt(tIdx) == '_') {
+                tIdx++;
+            }
+
+            // If one string has pieces left and the other doesn't, return false
+            if (sIdx == n || tIdx == n) {
+                return sIdx == tIdx;
+            }
+
+            // Ensure the characters match
+            if (start.charAt(sIdx) != target.charAt(tIdx)) {
+                return false;
+            }
+
+            // Validate movement rules
+            if (start.charAt(sIdx) == 'L' && sIdx < tIdx) {
+                return false; // 'L' cannot move right
+            }
+            if (start.charAt(sIdx) == 'R' && sIdx > tIdx) {
+                return false; // 'R' cannot move left
+            }
+
+            // Move to the next piece
+            sIdx++;
+            tIdx++;
+        }
+
+        return true;
+    }
+}
