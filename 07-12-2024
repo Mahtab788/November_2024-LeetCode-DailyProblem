@@ -1,0 +1,34 @@
+#.1760. Minimum Limit of Balls in a Bag.
+import java.util.*;
+
+class Solution {
+    public int minimumSize(int[] nums, int maxOperations) {
+        int left = 1, right = Arrays.stream(nums).max().getAsInt(); // Determine range
+        int result = right;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int operations = 0;
+
+            for (int balls : nums) {
+                // Calculate operations needed for this mid as penalty
+                operations += (balls - 1) / mid;
+
+                // Early exit if operations exceed maxOperations
+                if (operations > maxOperations) {
+                    break;
+                }
+            }
+
+            // Check if the penalty is valid
+            if (operations <= maxOperations) {
+                result = mid;
+                right = mid - 1; // Try a smaller penalty
+            } else {
+                left = mid + 1; // Try a larger penalty
+            }
+        }
+
+        return result;
+    }
+}
